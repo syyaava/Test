@@ -13,18 +13,6 @@ var configHelper = new ConfigurationReaderHelper(new List<IConfigReader>()
     new CSVConfigReader(),
 });
 
-//using (var fs = new FileStream(path + "configs.json", FileMode.Create, FileAccess.Write))
-//{
-//    JsonSerializer.Serialize(fs, new List<Configuration>()
-//    {
-//        new Configuration() { Name = "List config 1", Description = "List config"},
-//        new Configuration() { Name = "List config 2", Description = "List config"},
-//        new Configuration() { Name = "List config 3", Description = "List config"},
-//        new Configuration() { Name = "List config 4", Description = "List config"},
-//        new Configuration() { Name = "List config 5", Description = "List config"},
-//    });
-//}
-
 if (!Directory.Exists(path))
 {
     Console.WriteLine("This directory does not exists.");

@@ -51,7 +51,7 @@ namespace Test
         {
             foreach (var item in config)
             {
-                if (typeof(T).GetProperties().Any(p => p.GetValue(item) is null))
+                if (typeof(T).GetProperties().Any(p => p.GetValue(item) is null || string.IsNullOrEmpty((string)p.GetValue(item))))
                     return true;
             }
             return false;
