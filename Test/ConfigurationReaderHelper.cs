@@ -20,20 +20,35 @@ namespace Test
             this.configReaders = configReaders;
         }
 
-        public Configuration GetConfigFromFile(string fileName)
+        public OperationResult<Configuration> GetConfigFromFile(string fileName)
         {
-            var reader = SelectReader(fileName);
-            return reader.ReadConfigFromFile<Configuration>(fileName);
+            try
+            {
+                var reader = SelectReader(fileName);
+                var config = reader.ReadConfigFromFile<Configuration>(fileName);
+                var result = new OperationResult<Configuration>(config);
+                return result;
+            }
+            catch(ArgumentNullException ex)
+            {
+                return new OperationResult<Configuration>(null, OperationResult<Configuration>.StatusCode.Error, 
+                    ex);
+            }
+            catch(DeserializeException ex)
+            {
+                return new OperationResult<Configuration>(null, OperationResult<Configuration>.StatusCode.Error,
+                    ex);
+            }
         }
 
         IConfigReader SelectReader(string fileName)
         {
             var fileExtention = new string(fileName.Reverse().TakeWhile(c => c != '.').Reverse().ToArray()).ToLower();
-            var reader = configReaders.Where(x => x.FilesFormat.ToLower() == fileExtention).FirstOrDefault();
+            var reader = configReaders.Where(x => x.FilesFormat.ToLower() == fileExtention.ToLower()).FirstOrDefault();
             if (reader is not null)
                 return reader;
             else
-                throw new ArgumentNullException($"Failed to select reader");
+                throw new ArgumentNullException($"Failed to select reader. File: {fileName}.");
         }
     }
 }

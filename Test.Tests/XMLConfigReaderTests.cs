@@ -4,18 +4,18 @@ namespace Test.Tests
 {
     public class XMLConfigReaderTests
     {
+        string path = "configs/";
         IConfigReader reader;
         public XMLConfigReaderTests()
         {
             CreateXMLFiles();
             reader = new XMLConfigReader();
         }
-
-        
+                
         [Fact]
         public void ReadConfig_NotNullValueProps_ReturnConfig()
         {
-            string fileName = "config2.xml";
+            string fileName = path + "config2.xml";
 
             var config = reader.ReadConfigFromFile<Configuration>(fileName);
 
@@ -28,7 +28,7 @@ namespace Test.Tests
         [Fact]
         public void ReadConfig_OnePropHaveNullValue_ThrowDeserializeException()
         {
-            string fileName = "config1.xml";
+            string fileName = path + "config1.xml";
 
             Assert.Throws<DeserializeException>(() => reader.ReadConfigFromFile<Configuration>(fileName));
         }
@@ -36,7 +36,7 @@ namespace Test.Tests
         [Fact]
         public void ReadConfig_AllPropHaveNullValue_ThrowDeserializeException()
         {
-            string fileName = "config0.xml";
+            string fileName = path + "config0.xml";
 
             Assert.Throws<DeserializeException>(() => reader.ReadConfigFromFile<Configuration>(fileName));
         }
@@ -50,13 +50,16 @@ namespace Test.Tests
                 new Configuration() { Name = "Config 3", Description = "Config 3"},
                 new Configuration() { Name = "Config 4", Description = "Config 4 xml"}
             };
-            
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
             var xmlSerializer = new XmlSerializer(typeof(Configuration));
 
             for (int i = 0; i < configs.Count; i++)
             {
                 Configuration? config = configs[i];
-                using (var fs = new FileStream($"config{i}.xml", FileMode.Create, FileAccess.Write))
+                using (var fs = new FileStream($"{path}config{i}.xml", FileMode.Create, FileAccess.Write))
                 {
                     xmlSerializer.Serialize(fs, config);
                 }

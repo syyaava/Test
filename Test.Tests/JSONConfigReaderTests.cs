@@ -5,6 +5,7 @@ namespace Test.Tests
 {
     public class JSONConfigReaderTests
     {
+        string path = "configs/";
         IConfigReader reader;
         public JSONConfigReaderTests()
         {           
@@ -15,7 +16,7 @@ namespace Test.Tests
         [Fact]
         public void ReadConfig_NotNullValueProps_ReturnConfig()
         {
-            string fileName = "config2.json";
+            string fileName = path + "config2.json";
 
             var config = reader.ReadConfigFromFile<Configuration>(fileName);
 
@@ -28,7 +29,7 @@ namespace Test.Tests
         [Fact]
         public void ReadConfig_OnePropHaveNullValue_ThrowDeserializeException()
         {
-            string fileName = "config1.json";
+            string fileName = path + "config1.json";
 
             Assert.Throws<DeserializeException>(() => reader.ReadConfigFromFile<Configuration>(fileName));
         }
@@ -36,7 +37,7 @@ namespace Test.Tests
         [Fact]
         public void ReadConfig_AllPropHaveNullValue_ThrowDeserializeException()
         {
-            string fileName = "config0.json";
+            string fileName = path + "config0.json";
 
             Assert.Throws<DeserializeException>(() => reader.ReadConfigFromFile<Configuration>(fileName));
         }
@@ -51,10 +52,13 @@ namespace Test.Tests
                 new Configuration() { Name = "Config 4", Description = "Config 4 json"}
             };
 
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
             for (int i = 0; i < configs.Count; i++)
             {
                 Configuration? config = configs[i];
-                using (var fs = new FileStream($"config{i}.json", FileMode.Create, FileAccess.Write))
+                using (var fs = new FileStream($"{path}config{i}.json", FileMode.Create, FileAccess.Write))
                 {
                     JsonSerializer.Serialize(fs, config);
                 }

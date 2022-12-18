@@ -8,17 +8,18 @@ namespace Test.Tests
 {
     public class CSVConfigReaderTests
     {
+        string path = "configs/";
         IConfigReader reader;
         public CSVConfigReaderTests()
         {
-            CreateJsonFiles();
+            CreateCSVFiles();
             reader = new CSVConfigReader();
         }
 
         [Fact]
         public void ReadConfig_NotNullValueProps_ReturnConfig()
         {
-            string fileName = "config2.csv";
+            string fileName = path + "config2.csv";
 
             var config = reader.ReadConfigFromFile<Configuration>(fileName);
 
@@ -31,7 +32,7 @@ namespace Test.Tests
         [Fact]
         public void ReadConfig_OnePropHaveNullValue_ThrowDeserializeException()
         {
-            string fileName = "config1.csv";
+            string fileName = path + "config1.csv";
 
             Assert.Throws<DeserializeException>(() => reader.ReadConfigFromFile<Configuration>(fileName));
         }
@@ -39,12 +40,12 @@ namespace Test.Tests
         [Fact]
         public void ReadConfig_AllPropHaveNullValue_ThrowDeserializeException()
         {
-            string fileName = "config0.csv";
+            string fileName = path + "config0.csv";
 
             Assert.Throws<DeserializeException>(() => reader.ReadConfigFromFile<Configuration>(fileName));
         }
 
-        private void CreateJsonFiles()
+        private void CreateCSVFiles()
         {
             var configs = new List<Configuration>()
             {
@@ -54,10 +55,13 @@ namespace Test.Tests
                 new Configuration() { Name = "Config 4", Description = "Config 4 json"}
             };
 
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
             for (int i = 0; i < configs.Count; i++)
             {
                 Configuration? config = configs[i];
-                using (var fs = new FileStream($"config{i}.csv", FileMode.Create, FileAccess.Write))
+                using (var fs = new FileStream($"{path}config{i}.csv", FileMode.Create, FileAccess.Write))
                 {
                     var csv = config.ToCSV();
                     using(var sw = new StreamWriter(fs))

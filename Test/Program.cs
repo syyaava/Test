@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using Test;
 
@@ -23,24 +24,14 @@ var files = Directory.GetFiles(path);
 
 foreach(var file in files)
 {
-    try
+    var config = configHelper.GetConfigFromFile(file);
+    if(config.Status == OperationResult<Configuration>.StatusCode.Error)
     {
-        var config = configHelper.GetConfigFromFile(file);
-        configurations.Add(config);
-        LogToConsole();
+        ErrorOutput(config);
+        continue;
     }
-    catch (DirectoryNotFoundException ex)
-    {
-        Console.WriteLine("********************");
-        Console.WriteLine(ex.Message);
-        Console.WriteLine("********************");
-    }
-    catch (DeserializeException ex)
-    {
-        Console.WriteLine("--------------------");
-        Console.WriteLine(ex.Message);
-        Console.WriteLine("--------------------");
-    }
+    configurations.Add(config.Result);
+    LogToConsole();
 }
 
 Console.ReadLine();
@@ -51,4 +42,11 @@ void LogToConsole()
     foreach (var config in configurations)
         Console.WriteLine(config);
     Console.WriteLine("////////End Configuration////////");
+}
+
+static void ErrorOutput(OperationResult<Configuration> config)
+{
+    Console.WriteLine("--------------------");
+    Console.WriteLine($"Configuration reading error. {config.Exception}");
+    Console.WriteLine("--------------------");
 }
