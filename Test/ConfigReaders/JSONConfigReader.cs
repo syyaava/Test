@@ -25,7 +25,7 @@ namespace Test
 
                     if (string.IsNullOrEmpty(json))
                         throw new DeserializeException($"Exception when trying to deserialize an object from JSON. " +
-                                                $"There is no content in the file. Path to file {path}.");
+                                                $"There is no content in the file. Path to file: {path}.");
                     try
                     {
                         config = JsonSerializer.Deserialize<List<T>>(json);
@@ -36,7 +36,7 @@ namespace Test
                     }
 
                     if (AnyPropIsNull<T>(config))
-                        throw new DeserializeException($"Some object properties have null value. Path to file {path}.");
+                        throw new DeserializeException($"Json deserialization. Some object properties have null value. Path to file {path}.");
 
                     if (config == null || config.Equals(default) || config.Count() == 0)
                         throw new DeserializeException($"Exception when trying to deserialize an object from JSON. " +

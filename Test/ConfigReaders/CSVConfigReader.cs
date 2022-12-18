@@ -26,7 +26,7 @@ namespace Test
 
                         if (string.IsNullOrEmpty(csv))
                             throw new DeserializeException($"Exception when trying to deserialize an object from CSV. " +
-                                                    $"There is no content in the file. Path to file {path}.");
+                                                    $"There is no content in the file. Path to file: {path}.");
 
                         var rawConfig = GetDefaultConfigObject<T>();
 

@@ -34,7 +34,7 @@ namespace Test
                                                 $"The {config} object contains the default value for {typeof(T)} or have not items.");
 
                     if (AnyPropIsNull<T>(config))
-                        throw new DeserializeException($"Some object properties have null value. Path to file {path}.");
+                        throw new DeserializeException($"Xml deserialization. Some object properties have null value. Path to file {path}.");
 
                     return config;
                 }
