@@ -20,23 +20,23 @@ namespace Test
             this.configReaders = configReaders;
         }
 
-        public OperationResult<Configuration> GetConfigFromFile(string fileName)
+        public OperationResult<IEnumerable<Configuration>> GetConfigFromFile(string fileName)
         {
             try
             {
                 var reader = SelectReader(fileName);
                 var config = reader.ReadConfigFromFile<Configuration>(fileName);
-                var result = new OperationResult<Configuration>(config);
+                var result = new OperationResult<IEnumerable<Configuration>>(config);
                 return result;
             }
             catch(ArgumentNullException ex)
             {
-                return new OperationResult<Configuration>(null, OperationResult<Configuration>.StatusCode.Error, 
+                return new OperationResult<IEnumerable<Configuration>>(null, OperationResult<IEnumerable<Configuration>>.StatusCode.Error, 
                     ex);
             }
             catch(DeserializeException ex)
             {
-                return new OperationResult<Configuration>(null, OperationResult<Configuration>.StatusCode.Error,
+                return new OperationResult<IEnumerable<Configuration>>(null, OperationResult<IEnumerable<Configuration>>.StatusCode.Error,
                     ex);
             }
         }

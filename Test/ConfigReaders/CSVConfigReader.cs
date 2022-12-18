@@ -12,11 +12,11 @@ namespace Test
     {
         public string FilesFormat { get; } = "csv";
 
-        public T ReadConfigFromFile<T>(string path)
+        public IEnumerable<T> ReadConfigFromFile<T>(string path)
         {
             try
             {
-                T? config = default;
+                List<T> config = new List<T>();
                 using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
                     var sr = new StreamReader(fs);
@@ -28,9 +28,10 @@ namespace Test
                             throw new DeserializeException($"Exception when trying to deserialize an object from CSV. " +
                                                     $"There is no content in the file. Path to file {path}.");
 
-                        config = GetDefaultConfigObject<T>();
+                        var rawConfig = GetDefaultConfigObject<T>();
 
-                        SetPropValues(path, config, csv);
+                        SetPropValues(path, rawConfig, csv);
+                        config.Add(rawConfig);
                     }
                     return config;
                 }

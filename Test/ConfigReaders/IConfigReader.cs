@@ -9,6 +9,6 @@ namespace Test
     public interface IConfigReader
     {
         string FilesFormat { get; }
-        T ReadConfigFromFile<T>(string path);
+        IEnumerable<T> ReadConfigFromFile<T>(string path);
     }
 }

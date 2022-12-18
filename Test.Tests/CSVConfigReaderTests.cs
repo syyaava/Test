@@ -21,11 +21,14 @@ namespace Test.Tests
         {
             string fileName = path + "config2.csv";
 
-            var config = reader.ReadConfigFromFile<Configuration>(fileName);
+            var configs = reader.ReadConfigFromFile<Configuration>(fileName);
 
-            Assert.NotNull(config);
-            Assert.NotNull(config.Name);
-            Assert.NotNull(config.Description);
+            foreach (var config in configs)
+            {
+                Assert.NotNull(config);
+                Assert.NotNull(config.Name);
+                Assert.NotNull(config.Description);
+            }
         }
 
 
@@ -44,6 +47,31 @@ namespace Test.Tests
 
             Assert.Throws<DeserializeException>(() => reader.ReadConfigFromFile<Configuration>(fileName));
         }
+
+        [Fact]
+        public void ReadConfig_IEnumerableAllPropHaveNotNullValue_ReturnIEnumerableWithManyConfigs()
+        {
+            string fileName = path + "configs.csv";
+
+            var configs = reader.ReadConfigFromFile<Configuration>(fileName);
+
+            Assert.True(configs.Count() > 1);
+            foreach (var config in configs)
+            {
+                Assert.NotNull(config);
+                Assert.NotNull(config.Name);
+                Assert.NotNull(config.Description);
+            }
+        }
+
+        [Fact]
+        public void ReadConfig_IEnumerableAnyPropHaveNullValue_ThrowDeserializeException()
+        {
+            string fileName = path + "configs2.csv";
+
+            Assert.Throws<DeserializeException>(() => reader.ReadConfigFromFile<Configuration>(fileName));
+        }
+
 
         private void CreateCSVFiles()
         {
@@ -67,6 +95,27 @@ namespace Test.Tests
                     using(var sw = new StreamWriter(fs))
                         sw.WriteLine(csv);
                 }
+            }
+
+            using (var fs = new FileStream($"{path}configs.csv", FileMode.Create, FileAccess.Write))
+            {
+                using (var sw = new StreamWriter(fs))
+                    for (var i = 0; i < 5; i++)
+                    {
+                        var csv = new Configuration() {Name = $"CSV Config many {i}", Description = $"CSV Config many {i}" }.ToCSV();
+                        sw.WriteLine(csv);
+                    }
+            }
+
+            using (var fs = new FileStream($"{path}configs2.csv", FileMode.Create, FileAccess.Write))
+            {
+                using (var sw = new StreamWriter(fs))
+                    for (var i = 0; i < configs.Count; i++)
+                    {
+                        Configuration? config = configs[i];
+                        var csv = config.ToCSV();                    
+                        sw.WriteLine(csv);
+                    }
             }
         }
     }

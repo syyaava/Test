@@ -13,15 +13,18 @@ namespace Test.Tests
         }
                 
         [Fact]
-        public void ReadConfig_NotNullValueProps_ReturnConfig()
+        public void ReadConfig_NotNullValueProps_ReturnIEnumerableWithOneConfig()
         {
             string fileName = path + "config2.xml";
 
-            var config = reader.ReadConfigFromFile<Configuration>(fileName);
+            var configs = reader.ReadConfigFromFile<Configuration>(fileName);
 
-            Assert.NotNull(config);
-            Assert.NotNull(config.Name);
-            Assert.NotNull(config.Description);
+            foreach (var config in configs)
+            {
+                Assert.NotNull(config);
+                Assert.NotNull(config.Name);
+                Assert.NotNull(config.Description);
+            }
         }
 
         
@@ -37,6 +40,30 @@ namespace Test.Tests
         public void ReadConfig_AllPropHaveNullValue_ThrowDeserializeException()
         {
             string fileName = path + "config0.xml";
+
+            Assert.Throws<DeserializeException>(() => reader.ReadConfigFromFile<Configuration>(fileName));
+        }
+        
+        [Fact]
+        public void ReadConfig_IEnumerableAllPropHaveNotNullValue_ReturnIEnumerableWithManyConfigs()
+        {
+            string fileName = path + "configs.xml";
+
+            var configs = reader.ReadConfigFromFile<Configuration>(fileName);
+
+            Assert.True(configs.Count() > 1);
+            foreach (var config in configs)
+            {
+                Assert.NotNull(config);
+                Assert.NotNull(config.Name);
+                Assert.NotNull(config.Description);
+            }
+        }
+
+        [Fact]
+        public void ReadConfig_IEnumerableAnyPropHaveNullValue_ThrowDeserializeException()
+        {
+            string fileName = path + "configs2.xml";
 
             Assert.Throws<DeserializeException>(() => reader.ReadConfigFromFile<Configuration>(fileName));
         }
@@ -63,6 +90,27 @@ namespace Test.Tests
                 {
                     xmlSerializer.Serialize(fs, config);
                 }
+            }
+
+            xmlSerializer = new XmlSerializer(typeof(List<Configuration>));
+            using (var fs = new FileStream($"{path}configs.xml", FileMode.Create, FileAccess.Write))
+            {
+                xmlSerializer.Serialize(fs, new List<Configuration>()
+                {
+                    new Configuration() { Name = "Config 5", Description = "Config 5 xml"},
+                    new Configuration() { Name = "Config 55", Description = "Config 55 xml"},
+                    new Configuration() { Name = "Config 555", Description = "Config 555 xml"}
+                });
+            }
+
+            using (var fs = new FileStream($"{path}configs2.xml", FileMode.Create, FileAccess.Write))
+            {
+                xmlSerializer.Serialize(fs, new List<Configuration>()
+                {
+                    new Configuration() { Description = "Config 5 xml"},
+                    new Configuration() { Name = "Config 55"},
+                    new Configuration() { Name = "Config 555", Description = "Config 555 xml"}
+                });
             }
         }
     }

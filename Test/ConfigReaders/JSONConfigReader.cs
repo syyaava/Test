@@ -13,11 +13,11 @@ namespace Test
     {
         public string FilesFormat { get; } = "json";
 
-        public T ReadConfigFromFile<T>(string path)
+        public IEnumerable<T> ReadConfigFromFile<T>(string path)
         {
             try
             {
-                T? config = default;
+                List<T> config = new List<T>();
                 using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
                     var sr = new StreamReader(fs);
@@ -26,15 +26,21 @@ namespace Test
                     if (string.IsNullOrEmpty(json))
                         throw new DeserializeException($"Exception when trying to deserialize an object from JSON. " +
                                                 $"There is no content in the file. Path to file {path}.");
-
-                    config = JsonSerializer.Deserialize<T>(json);
+                    try
+                    {
+                        config = JsonSerializer.Deserialize<List<T>>(json);
+                    }
+                    catch
+                    {
+                        config.Add(JsonSerializer.Deserialize<T>(json));
+                    }
 
                     if (AnyPropIsNull<T>(config))
                         throw new DeserializeException($"Some object properties have null value. Path to file {path}.");
 
-                    if (config == null || config.Equals(default))
+                    if (config == null || config.Equals(default) || config.Count() == 0)
                         throw new DeserializeException($"Exception when trying to deserialize an object from JSON. " +
-                                                $"The {config} object contains the default value for {typeof(T)}.");
+                                                $"The {config} object contains the default value for {typeof(T)} or have not items.");
 
                     return config;
                 }
@@ -47,10 +53,13 @@ namespace Test
             }
         }
 
-        private bool AnyPropIsNull<T>(T config)
+        private bool AnyPropIsNull<T>(IEnumerable<T> config)
         {
-            if (typeof(T).GetProperties().Any(p => p.GetValue(config) is null))
-                return true;
+            foreach (var item in config)
+            {
+                if (typeof(T).GetProperties().Any(p => p.GetValue(item) is null))
+                    return true;
+            }
             return false;
         }
     }

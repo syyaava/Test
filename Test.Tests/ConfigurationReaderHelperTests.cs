@@ -36,7 +36,8 @@ namespace Test.Tests
                 var config = configHelper.GetConfigFromFile(file);
                 Assert.NotNull(config);
                 Assert.NotNull(config.Result);
-                Assert.True(config.Status == OperationResult<Configuration>.StatusCode.Success);
+                Assert.True(config.Result.Count() > 0);
+                Assert.True(config.Status == OperationResult<IEnumerable<Configuration>>.StatusCode.Success);
             }
         }
 
