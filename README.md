@@ -2,8 +2,8 @@
 Программа, имеющая возможность импорта данных из разных источников в объекты класса Configuration:
 public class Configuration  
 {  
-ensp public string Name { get; set; }  
-ensp public string Description { get; set; }  
+&ensp;public string Name { get; set; }  
+&ensp;public string Description { get; set; }  
 }  
 
 После обработки одного файла выводятся все уже загруженные конфигурации.
