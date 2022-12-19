@@ -1,10 +1,10 @@
 # Тестовое задание от Прософт-Системы
 Программа, имеющая возможность импорта данных из разных источников в объекты класса Configuration:
-public class Configuration
-{
-  public string Name { get; set; }
-  public string Description { get; set; }
-}
+public class Configuration  
+{  
+  public string Name { get; set; }  
+  public string Description { get; set; }  
+}  
 
 После обработки одного файла выводятся все уже загруженные конфигурации.
 При наличии ошибки в файле конфигурации программа выводит описание ошибки. 
